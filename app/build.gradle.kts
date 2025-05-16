@@ -45,6 +45,12 @@ android {
 
 dependencies {
 
+    implementation(project(":core:configs"))
+    implementation(project(":core:theme"))
+    implementation(project(":feature:recipes"))
+    implementation(project(":feature:profile"))
+    implementation(project(":feature:auth"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -56,9 +62,6 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
-    implementation(project(":core:configs"))
-    implementation(project(":feature:recipes"))
-    implementation(project(":feature:profile"))
     implementation(libs.firebase.common.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

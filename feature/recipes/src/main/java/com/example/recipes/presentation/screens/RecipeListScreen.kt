@@ -23,7 +23,6 @@ fun RecipeListScreen(
     viewModel: RecipeListViewModel = hiltViewModel()
 ) {
     val recipes by viewModel.recipes.collectAsState()
-    val error by viewModel.error.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
 
     PullToRefreshBox(

@@ -21,9 +21,6 @@ class RecipeListViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading = _isLoading.asStateFlow()
 
-    private val _error = MutableStateFlow<String?>(null)
-    val error = _error.asStateFlow()
-
     init {
         viewModelScope.launch {
             updateRecipes()
@@ -39,7 +36,7 @@ class RecipeListViewModel @Inject constructor(
             _isLoading.value = true
             _recipes.value = getRecipes()
         } catch (e: Exception) {
-            _error.value = e.localizedMessage
+            println("Error fetching recipes: ${e.message}")
         } finally {
             _isLoading.value = false
         }
@@ -53,8 +50,15 @@ class RecipeListViewModel @Inject constructor(
 
     fun addRecipe(recipe: Recipe) {
         viewModelScope.launch {
-            recipeListUseCase.addRecipe(recipe)
-            updateRecipes()
+            try {
+                _isLoading.value = true
+                recipeListUseCase.addRecipe(recipe)
+                updateRecipes()
+            } catch (e: Exception) {
+                println("Error adding recipe: ${e.message}")
+            } finally {
+                _isLoading.value = false
+            }
         }
     }
 }

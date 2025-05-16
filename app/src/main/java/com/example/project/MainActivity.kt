@@ -19,13 +19,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.configs.navigation.Routes
 import com.example.project.presentation.components.AppNavBar
 import com.example.project.presentation.navHost.RecipeNavHost
-import com.example.project.ui.theme.ProjectTheme
+import com.example.theme.ProjectTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -36,35 +38,46 @@ class MainActivity : ComponentActivity() {
         setContent {
             ProjectTheme {
                 val navController = rememberNavController()
-                Scaffold(
-                    topBar = {
-                        TopAppBar(
-                            colors = TopAppBarDefaults.topAppBarColors(
-                                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                            ),
-                            title = { Text("Recipe App") },
-                            actions = {
-                                IconButton(
-                                    onClick = { navController.navigate(Routes.PROFILE) }
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.AccountCircle,
-                                        contentDescription = "Profile",
-                                        modifier = Modifier.size(32.dp)
-                                    )
+                val currentBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentRoute = currentBackStackEntry?.destination?.route
+
+                if (currentRoute in Routes.mainRoutes) {
+                    return@ProjectTheme Scaffold(
+                        topBar = {
+                            TopAppBar(
+                                colors = TopAppBarDefaults.topAppBarColors(
+                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                ),
+                                title = { Text("Recipe App") },
+                                actions = {
+                                    IconButton(
+                                        onClick = {
+                                            navController.navigate(
+                                                Routes.PROFILE
+                                            )
+                                        }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.AccountCircle,
+                                            contentDescription = "Profile",
+                                            modifier = Modifier.size(32.dp)
+                                        )
+                                    }
                                 }
-                            }
-                        )
-                    },
-                    bottomBar = {
-                        AppNavBar(navController)
-                    }
-                ) { padding ->
-                    Box(modifier = Modifier.padding(padding)) {
-                        RecipeNavHost(navController = navController)
+                            )
+                        },
+                        bottomBar = {
+                            AppNavBar(navController)
+                        }
+                    ) { padding ->
+                        Box(modifier = Modifier.padding(padding)) {
+                            RecipeNavHost(navController = navController)
+                        }
                     }
                 }
+
+                RecipeNavHost(navController = navController)
             }
         }
     }

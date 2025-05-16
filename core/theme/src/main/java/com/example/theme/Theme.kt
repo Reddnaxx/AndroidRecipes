@@ -1,4 +1,4 @@
-package com.example.project.ui.theme
+package com.example.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -9,6 +9,16 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+
+object Spacing {
+    val extraSmall: Dp = 4.dp
+    val small: Dp = 8.dp
+    val medium: Dp = 16.dp
+    val large: Dp = 24.dp
+    val extraLarge: Dp = 3.dp
+}
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
