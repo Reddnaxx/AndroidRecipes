@@ -42,6 +42,9 @@ android {
 dependencies {
 
     implementation(project(":core:theme"))
+    implementation(project(":core:auth-domain"))
+    implementation(project(":core:auth-data"))
+    implementation(project(":core:ui"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -58,8 +61,11 @@ dependencies {
     implementation(libs.googleid)
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
+
+    ksp(libs.hilt.android.compiler)
+
     testImplementation(libs.junit)
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    ksp(libs.hilt.android.compiler)
 }

@@ -44,7 +44,9 @@ dependencies {
     implementation(libs.androidx.material3.android)
     implementation(libs.androidx.ui.android)
     implementation(libs.androidx.ui.graphics)
+
     testImplementation(libs.junit)
+    
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }

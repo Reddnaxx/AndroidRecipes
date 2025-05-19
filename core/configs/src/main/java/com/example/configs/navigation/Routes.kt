@@ -11,11 +11,7 @@ object Routes {
     const val FAVORITES = "recipe_favorites"
     const val PROFILE = "profile"
     const val SIGN_IN = "sign_in"
-
-    val mainRoutes = listOf(
-        LIST,
-        FAVORITES,
-    )
+    const val SIGN_UP = "sign_up"
 
     val bottomNavItems = listOf(
         BottomNavItem(

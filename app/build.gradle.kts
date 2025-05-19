@@ -47,6 +47,8 @@ dependencies {
 
     implementation(project(":core:configs"))
     implementation(project(":core:theme"))
+    implementation(project(":core:auth-domain"))
+    implementation(project(":core:auth-data"))
     implementation(project(":feature:recipes"))
     implementation(project(":feature:profile"))
     implementation(project(":feature:auth"))
@@ -63,12 +65,16 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.firebase.common.ktx)
+
+    ksp(libs.hilt.android.compiler)
+
     testImplementation(libs.junit)
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    ksp(libs.hilt.android.compiler)
 }

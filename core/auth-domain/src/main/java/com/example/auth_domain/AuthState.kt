@@ -1,4 +1,4 @@
-package com.example.auth.domain.models
+package com.example.auth_domain
 
 sealed class AuthState {
     object Unauthenticated : AuthState()

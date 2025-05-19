@@ -4,14 +4,13 @@ import com.example.recipes.data.dataSources.RecipesDataSource
 import com.example.recipes.data.repositories.RecipeRepository
 import com.example.recipes.data.useCases.RecipeListUseCase
 import com.example.recipes.domain.repositories.IRecipeRepository
-import com.example.recipes.presentation.viewModels.RecipeListViewModel
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ViewModelComponent
+import dagger.hilt.components.SingletonComponent
 
 @Module
-@InstallIn(ViewModelComponent::class)
+@InstallIn(SingletonComponent::class)
 object RecipesModule {
 
     @Provides
@@ -31,12 +30,5 @@ object RecipesModule {
         recipeRepository: IRecipeRepository
     ): RecipeListUseCase {
         return RecipeListUseCase(recipeRepository)
-    }
-
-    @Provides
-    fun provideRecipeViewModel(
-        recipeListUseCase: RecipeListUseCase
-    ): RecipeListViewModel {
-        return RecipeListViewModel(recipeListUseCase)
     }
 }

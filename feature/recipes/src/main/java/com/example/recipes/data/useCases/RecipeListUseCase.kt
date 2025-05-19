@@ -5,7 +5,9 @@ import com.example.recipes.data.mappers.toDto
 import com.example.recipes.domain.models.Recipe
 import com.example.recipes.domain.repositories.IRecipeRepository
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class RecipeListUseCase @Inject constructor(
     private val recipeRepository: IRecipeRepository
 ) {
