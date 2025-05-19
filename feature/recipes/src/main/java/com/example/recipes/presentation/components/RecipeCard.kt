@@ -17,7 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
-import com.example.recipes.domain.models.Recipe
+import com.example.recipe_domain.models.Recipe
 
 @Composable
 fun RecipeCard(
@@ -111,7 +111,8 @@ private fun RecipeCardPreview() {
             description = "This is a sample recipe description.",
             ingredients = listOf("Ingredient 1", "Ingredient 2"),
             instructions = listOf("Step 1", "Step 2"),
-            imageUrl = "https://example.com/image.jpg"
+            imageUrl = "https://example.com/image.jpg",
+            authorId = "id"
         ),
     )
 }

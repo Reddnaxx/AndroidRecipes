@@ -2,8 +2,8 @@ package com.example.recipes.presentation.viewModels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.recipes.data.useCases.RecipeListUseCase
-import com.example.recipes.domain.models.Recipe
+import com.example.recipe_data.useCases.RecipeListUseCase
+import com.example.recipe_domain.models.Recipe
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -45,20 +45,6 @@ class RecipeListViewModel @Inject constructor(
     fun refreshRecipes() {
         viewModelScope.launch {
             updateRecipes()
-        }
-    }
-
-    fun addRecipe(recipe: Recipe) {
-        viewModelScope.launch {
-            try {
-                _isLoading.value = true
-                recipeListUseCase.addRecipe(recipe)
-                updateRecipes()
-            } catch (e: Exception) {
-                println("Error adding recipe: ${e.message}")
-            } finally {
-                _isLoading.value = false
-            }
         }
     }
 }

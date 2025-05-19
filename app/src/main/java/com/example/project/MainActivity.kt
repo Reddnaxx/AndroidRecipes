@@ -35,6 +35,7 @@ import com.example.configs.navigation.Routes
 import com.example.project.presentation.components.AppNavBar
 import com.example.project.presentation.navHost.AuthNavHost
 import com.example.project.presentation.navHost.RecipeNavHost
+import com.example.recipes.presentation.components.RecipeAddFloatingButton
 import com.example.theme.ProjectTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -55,6 +56,7 @@ class MainActivity : ComponentActivity() {
                 val currentTitle = when (currentRoute) {
                     Routes.FAVORITES -> "Избранное"
                     Routes.PROFILE -> "Профиль"
+                    Routes.CREATION -> "Создание рецепта"
                     else -> "Рецепты"
                 }
 
@@ -92,6 +94,19 @@ class MainActivity : ComponentActivity() {
                         if (authState is AuthState.Authenticated) {
                             AppNavBar(navController)
                         }
+                    },
+                    floatingActionButton = {
+                        RecipeAddFloatingButton(
+                            onClick = {
+                                navController.navigate(Routes.CREATION) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            }
+                        )
                     }
                 ) { padding ->
                     if (authState is AuthState.Authenticated == false) {

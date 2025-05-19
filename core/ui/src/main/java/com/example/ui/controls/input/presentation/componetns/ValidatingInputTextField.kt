@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.intl.LocaleList
 
 @Composable
 fun ValidatingInputTextField(
@@ -30,7 +31,11 @@ fun ValidatingInputTextField(
         onValueChange = onValueChange,
         enabled = disabled.not(),
         singleLine = true,
-        keyboardOptions = KeyboardOptions(keyboardType = keyBoardType),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = keyBoardType,
+            hintLocales = LocaleList.current,
+            autoCorrectEnabled = true
+        ),
         label = {
             Text(
                 text = label,

@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.credentials.CredentialManager
 import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.credentials.exceptions.NoCredentialException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -66,6 +67,14 @@ class AuthViewModel @Inject constructor(
             repo.signInWithGoogle(googleIdTokenCredential.idToken)
         } catch (e: NoCredentialException) {
             Log.d("AuthViewModel", "NoCredentialException: ${e.message}")
+            repo.setError("${e.message}")
+        } catch (e: GetCredentialCancellationException) {
+            Log.d(
+                "AuthViewModel",
+                "GetCredentialCancellationException: ${e.message}"
+            )
+        } catch (e: Exception) {
+            Log.d("AuthViewModel", "Exception: ${e.message}")
             repo.setError("${e.message}")
         }
     }

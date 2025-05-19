@@ -42,8 +42,11 @@ android {
 dependencies {
 
     implementation(project(":core:configs"))
+    implementation(project(":core:theme"))
     implementation(project(":core:auth-domain"))
     implementation(project(":core:auth-data"))
+    implementation(project(":core:recipe-domain"))
+    implementation(project(":core:recipe-data"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -63,11 +66,14 @@ dependencies {
     implementation(libs.androidx.credentials)
     implementation(libs.androidx.credentials.play.services.auth)
     implementation(libs.googleid)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
 
     ksp(libs.hilt.android.compiler)
 
     testImplementation(libs.junit)
 
     androidTestImplementation(libs.androidx.junit)
+    debugImplementation(libs.androidx.ui.tooling)
     androidTestImplementation(libs.androidx.espresso.core)
 }
