@@ -2,6 +2,11 @@
 
 package com.example.profile.presentation.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,7 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -23,14 +28,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
+import com.example.profile.R
 import com.example.profile.presentation.components.MyRecipeCard
+import com.example.profile.presentation.components.MyRecipeCardSkeleton
 import com.example.profile.presentation.viewModels.ProfileViewModel
 import com.example.theme.Spacing
 import com.google.firebase.auth.FirebaseUser
@@ -41,13 +50,13 @@ fun ProfileScreen(
 ) {
     val user = viewModel.user!!
     val recipes by viewModel.recipes.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
     val scrollState = rememberScrollState(0)
 
     LazyColumn(
         modifier = Modifier
-            .padding(horizontal = Spacing.small)
-            .padding(top = Spacing.large),
+            .padding(horizontal = Spacing.small, vertical = Spacing.large),
         verticalArrangement = Arrangement.spacedBy(Spacing.medium),
     ) {
         item {
@@ -60,13 +69,75 @@ fun ProfileScreen(
 
         item {
             Text(
-                text = "Мои рецепты",
+                text = stringResource(R.string.profile_my_recipes),
                 style = MaterialTheme.typography.headlineSmall
             )
         }
 
-        items(recipes, key = { it.id }) {
-            MyRecipeCard(recipe = it, onNavigateToEdit = {})
+        when {
+            isLoading -> {
+                items(2) { idx ->
+                    val visibleState = remember {
+                        MutableTransitionState(false).apply {
+                            targetState = true
+                        }
+                    }
+
+                    AnimatedVisibility(
+                        visibleState = visibleState,
+                        enter = fadeIn(
+                            initialAlpha = 0.3f,
+                            animationSpec = tween(
+                                durationMillis = 600,
+                                delayMillis = idx * 100
+                            )
+                        ),
+                        exit = fadeOut(animationSpec = tween(durationMillis = 300))
+                    ) {
+                        MyRecipeCardSkeleton()
+                    }
+                }
+            }
+
+            recipes.isNotEmpty() -> {
+                itemsIndexed(
+                    items = recipes,
+                    key = { _, recipe -> recipe.id }
+                ) { idx, recipe ->
+                    val visibleState = remember {
+                        MutableTransitionState(false).apply {
+                            targetState = true
+                        }
+                    }
+
+                    AnimatedVisibility(
+                        visibleState = visibleState,
+                        enter = fadeIn(
+                            initialAlpha = 0.3f,
+                            animationSpec = tween(
+                                durationMillis = 600,
+                                delayMillis = idx * 100
+                            )
+                        ),
+                        exit = fadeOut(animationSpec = tween(durationMillis = 300))
+                    ) {
+                        MyRecipeCard(
+                            recipe = recipe,
+                            onNavigateToEdit = {}
+                        )
+                    }
+                }
+            }
+
+            else -> {
+                item {
+                    Text(
+                        text = stringResource(R.string.profile_empty),
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.alpha(0.5f),
+                    )
+                }
+            }
         }
     }
 }
@@ -82,7 +153,7 @@ private fun UserInfo(
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
         AsyncImage(
             model = user.photoUrl ?: "https://i.pravatar.cc/300",
-            contentDescription = "User Profile Picture",
+            contentDescription = stringResource(R.string.profile_picture_desc),
             modifier = Modifier
                 .size(64.dp)
                 .clip(CircleShape)
@@ -92,7 +163,7 @@ private fun UserInfo(
             modifier = Modifier.padding(start = 16.dp)
         ) {
             Text(
-                text = "${if (isNameEmpty) "Аноним" else user.displayName}",
+                text = "${if (isNameEmpty) stringResource(R.string.profile_anonymous) else user.displayName}",
                 style = MaterialTheme.typography.bodyLarge
             )
             Text(
@@ -112,7 +183,7 @@ private fun UserInfo(
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Default.ExitToApp,
-                contentDescription = "Sign Out",
+                contentDescription = stringResource(R.string.profile_sign_out_desc),
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(24.dp)
             )

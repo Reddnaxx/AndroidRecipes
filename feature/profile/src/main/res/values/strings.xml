@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="profile_anonymous">Аноним</string>
+    <string name="profile_sign_out_desc">Sign Out</string>
+    <string name="profile_picture_desc">User Profile Picture</string>
+    <string name="profile_empty">У вас пока нет рецептов</string>
+    <string name="profile_my_recipes">Мои рецепты</string>
+</resources>

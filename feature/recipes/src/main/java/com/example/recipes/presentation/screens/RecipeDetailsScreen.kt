@@ -9,9 +9,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -39,12 +42,19 @@ fun RecipeDetailsScreen(
     if (state == null && isLoading.not()) {
         viewModel.initialize(recipeId)
     }
-    state?.let {
-        RecipeDetailContent(
-            recipe = it,
-            modifier = Modifier.fillMaxSize()
-        )
-    } ?: RecipeDetailSkeleton()
+
+    PullToRefreshBox(
+        isRefreshing = isLoading,
+        onRefresh = viewModel::refresh,
+        modifier = Modifier.fillMaxSize()
+    ) {
+        state?.let {
+            RecipeDetailContent(
+                recipe = it,
+                modifier = Modifier.fillMaxSize()
+            )
+        } ?: RecipeDetailSkeleton()
+    }
 }
 
 @Composable
@@ -52,10 +62,13 @@ private fun RecipeDetailContent(
     recipe: Recipe,
     modifier: Modifier = Modifier,
 ) {
+    val scrollState = rememberScrollState()
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(Spacing.medium)
+            .verticalScroll(scrollState)
     ) {
         Text(
             text = recipe.name,
@@ -69,7 +82,7 @@ private fun RecipeDetailContent(
             model = recipe.imageUrl,
             contentDescription = null,
             modifier = Modifier
-                .fillMaxWidth()
+                .height(210.dp)
                 .clip(MaterialTheme.shapes.medium)
                 .align(Alignment.CenterHorizontally),
         )
@@ -82,7 +95,7 @@ private fun RecipeDetailContent(
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(Spacing.medium))
+        Spacer(modifier = Modifier.height(Spacing.large))
 
         Text(
             text = "Ингредиенты",

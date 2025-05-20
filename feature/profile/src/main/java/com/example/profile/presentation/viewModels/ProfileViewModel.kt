@@ -1,5 +1,6 @@
 package com.example.profile.presentation.viewModels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.auth_domain.IAuthRepository
@@ -23,6 +24,9 @@ class ProfileViewModel @Inject constructor(
     private val _recipes = MutableStateFlow<List<Recipe>>(emptyList())
     val recipes = _recipes.asStateFlow()
 
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading = _isLoading.asStateFlow()
+
     init {
         viewModelScope.launch {
             getUserRecipes()
@@ -31,7 +35,17 @@ class ProfileViewModel @Inject constructor(
 
     private suspend fun getUserRecipes() {
         user?.let {
-            _recipes.value = recipeProfileUseCase.getUserRecipes(it.uid)
+            try {
+                _isLoading.value = true
+                _recipes.value = recipeProfileUseCase.getUserRecipes(it.uid)
+            } catch (e: Exception) {
+                Log.d(
+                    "ProfileViewModel",
+                    e.message ?: "Unknown error while fetching recipes"
+                )
+            } finally {
+                _isLoading.value = false
+            }
         }
     }
 
