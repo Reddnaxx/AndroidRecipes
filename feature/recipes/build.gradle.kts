@@ -44,6 +44,7 @@ android {
 
 dependencies {
 
+    implementation(project(":core:theme"))
     implementation(project(":core:configs"))
     implementation(project(":core:recipe-domain"))
     implementation(project(":core:recipe-data"))

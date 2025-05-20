@@ -35,6 +35,25 @@ class RecipesDataSource @Inject constructor() {
         return recipesList
     }
 
+    suspend fun getRecipeById(id: String): RecipeDto? {
+        var result: RecipeDto? = null
+
+        db.collection("recipes")
+            .whereEqualTo("id", id)
+            .get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    result = document.toObject(RecipeDto::class.java)
+                }
+            }
+            .addOnFailureListener { exception ->
+                println("Error getting documents: $exception")
+            }
+            .await()
+
+        return result
+    }
+
     suspend fun addRecipe(recipe: RecipeDto) {
         db.collection("recipes")
             .add(recipe)

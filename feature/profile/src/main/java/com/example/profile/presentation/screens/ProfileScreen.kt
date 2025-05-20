@@ -46,10 +46,8 @@ fun ProfileScreen(
 
     LazyColumn(
         modifier = Modifier
-            .padding(
-                horizontal = Spacing.small,
-                vertical = Spacing.large
-            ),
+            .padding(horizontal = Spacing.small)
+            .padding(top = Spacing.large),
         verticalArrangement = Arrangement.spacedBy(Spacing.medium),
     ) {
         item {

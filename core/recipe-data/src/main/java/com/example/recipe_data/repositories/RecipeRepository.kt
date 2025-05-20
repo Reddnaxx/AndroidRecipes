@@ -8,12 +8,13 @@ import javax.inject.Inject
 class RecipeRepository @Inject constructor(
     private val recipesApi: RecipesDataSource,
 ) : IRecipeRepository {
+
     override suspend fun getRecipes(authorId: String?): List<RecipeDto> {
         return recipesApi.getRecipes(authorId)
     }
 
     override suspend fun getRecipeById(id: String): RecipeDto? {
-        TODO("Not yet implemented")
+        return recipesApi.getRecipeById(id)
     }
 
     override suspend fun addRecipe(recipe: RecipeDto) {

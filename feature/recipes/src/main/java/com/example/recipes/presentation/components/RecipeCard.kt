@@ -61,42 +61,6 @@ fun RecipeCard(
                 text = recipe.description,
                 style = MaterialTheme.typography.bodyMedium
             )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Text(
-                text = "Ингредиенты:",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            for (ingredient in recipe.ingredients) {
-                Text(
-                    text = "• $ingredient",
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(start = 8.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Text(
-                text = "Инструкции:",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            recipe.instructions.forEachIndexed { index, step ->
-                Text(
-                    text = "${index + 1}. $step",
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(start = 8.dp, bottom = 4.dp)
-                )
-            }
         }
     }
 }

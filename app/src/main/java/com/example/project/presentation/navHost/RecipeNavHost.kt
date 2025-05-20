@@ -60,8 +60,20 @@ fun RecipeNavHost(navController: NavHostController) {
             arguments = listOf(navArgument("recipeId") {
                 type = NavType.StringType
             }),
-        ) {
-            RecipeDetailsScreen()
+        ) { entry ->
+            RecipeDetailsScreen(
+                recipeId = entry.arguments?.getString("recipeId"),
+                onNotFound = {
+                    navController.navigate(
+                        Routes.LIST
+                    ) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                })
         }
 
         composable(route = Routes.FAVORITES) {
