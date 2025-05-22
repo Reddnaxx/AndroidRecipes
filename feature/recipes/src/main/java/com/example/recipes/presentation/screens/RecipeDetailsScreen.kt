@@ -3,7 +3,9 @@
 package com.example.recipes.presentation.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,7 +13,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
@@ -32,12 +38,14 @@ import com.example.theme.Spacing
 fun RecipeDetailsScreen(
     recipeId: String?,
     onNotFound: () -> Unit,
+    onNavigateToEdit: (String) -> Unit,
     viewModel: RecipeDetailViewModel = hiltViewModel()
 ) {
     if (recipeId.isNullOrEmpty()) return onNotFound()
 
     val state by viewModel.state.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val isOwner by viewModel.isOwner.collectAsState()
 
     if (state == null && isLoading.not()) {
         viewModel.initialize(recipeId)
@@ -51,7 +59,9 @@ fun RecipeDetailsScreen(
         state?.let {
             RecipeDetailContent(
                 recipe = it,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                isOwner = isOwner,
+                onEditClick = { onNavigateToEdit(recipeId) }
             )
         } ?: RecipeDetailSkeleton()
     }
@@ -61,6 +71,8 @@ fun RecipeDetailsScreen(
 private fun RecipeDetailContent(
     recipe: Recipe,
     modifier: Modifier = Modifier,
+    isOwner: Boolean = false,
+    onEditClick: () -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
 
@@ -70,11 +82,26 @@ private fun RecipeDetailContent(
             .padding(Spacing.medium)
             .verticalScroll(scrollState)
     ) {
-        Text(
-            text = recipe.name,
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = recipe.name,
+                style = MaterialTheme.typography.headlineMedium
+            )
+
+            if (isOwner) {
+                IconButton(
+                    onClick = onEditClick
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Edit",
+                    )
+                }
+            }
+        }
 
         Spacer(modifier = Modifier.height(Spacing.medium))
 
@@ -143,7 +170,6 @@ fun RecipeDetailSkeleton(
         // Заголовок
         Spacer(
             modifier = Modifier
-                .align(Alignment.CenterHorizontally)
                 .fillMaxWidth(0.6f)
                 .height(32.dp)
                 .clip(MaterialTheme.shapes.medium)

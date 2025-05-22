@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -27,10 +28,10 @@ import com.example.theme.Spacing
 fun MyRecipeCard(
     modifier: Modifier = Modifier,
     recipe: Recipe,
-    onNavigateToEdit: (String) -> Unit,
+    onNavigateToDetails: (String) -> Unit
 ) {
     Card(
-        onClick = { onNavigateToEdit(recipe.id) },
+        onClick = { onNavigateToDetails(recipe.id) },
         modifier = modifier
             .fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,
@@ -51,7 +52,7 @@ fun MyRecipeCard(
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(160.dp)
+                        .heightIn(min = 160.dp, max = 200.dp)
                         .clip(MaterialTheme.shapes.medium)
                 )
                 Spacer(modifier = Modifier.height(Spacing.medium))
@@ -141,6 +142,6 @@ private fun MyRecipeCardPreview() {
             ),
             authorId = "123"
         ),
-        onNavigateToEdit = {}
+        onNavigateToDetails = {}
     )
 }

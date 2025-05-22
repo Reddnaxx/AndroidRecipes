@@ -47,6 +47,7 @@ import com.google.firebase.auth.FirebaseUser
 @Composable
 fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel(),
+    onNavigateToDetails: (String) -> Unit
 ) {
     val user = viewModel.user!!
     val recipes by viewModel.recipes.collectAsState()
@@ -123,7 +124,7 @@ fun ProfileScreen(
                     ) {
                         MyRecipeCard(
                             recipe = recipe,
-                            onNavigateToEdit = {}
+                            onNavigateToDetails = onNavigateToDetails
                         )
                     }
                 }

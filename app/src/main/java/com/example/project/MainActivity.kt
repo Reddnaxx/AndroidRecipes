@@ -96,17 +96,19 @@ class MainActivity : ComponentActivity() {
                         }
                     },
                     floatingActionButton = {
-                        RecipeAddFloatingButton(
-                            onClick = {
-                                navController.navigate(Routes.CREATION) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
+                        if (currentRoute != Routes.CREATION) {
+                            RecipeAddFloatingButton(
+                                onClick = {
+                                    navController.navigate(Routes.CREATION) {
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
                                     }
-                                    launchSingleTop = true
-                                    restoreState = true
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
                 ) { padding ->
                     if (authState is AuthState.Authenticated == false) {

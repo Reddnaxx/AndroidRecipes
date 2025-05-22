@@ -8,7 +8,7 @@ import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.credentials.exceptions.NoCredentialException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.auth.R
+import com.example.auth.BuildConfig
 import com.example.auth_domain.AuthState
 import com.example.auth_domain.IAuthRepository
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
@@ -49,7 +49,7 @@ class AuthViewModel @Inject constructor(
 
     fun signInWithGoogle() = viewModelScope.launch {
         val googleIdOption = GetGoogleIdOption.Builder()
-            .setServerClientId(context.getString(R.string.default_web_client_id))
+            .setServerClientId(BuildConfig.DEFAULT_WEB_CLIENT_ID)
             .setFilterByAuthorizedAccounts(false)
             .build()
 

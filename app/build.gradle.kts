@@ -40,6 +40,15 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
+    }
+    packaging {
+        resources {
+            pickFirsts += "META-INF/INDEX.LIST"
+            pickFirsts += "META-INF/DEPENDENCIES"
+            pickFirsts += "META-INF/io.netty.versions.properties"
+            pickFirsts += "META-INF/services/javax.xml.stream.XMLInputFactory"
+        }
     }
 }
 

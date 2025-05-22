@@ -17,6 +17,7 @@
             <option value="$PROJECT_DIR$/core/configs" />
             <option value="$PROJECT_DIR$/core/recipe-data" />
             <option value="$PROJECT_DIR$/core/recipe-domain" />
+            <option value="$PROJECT_DIR$/core/s3" />
             <option value="$PROJECT_DIR$/core/theme" />
             <option value="$PROJECT_DIR$/core/ui" />
             <option value="$PROJECT_DIR$/feature" />

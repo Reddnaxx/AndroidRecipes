@@ -7,10 +7,12 @@ plugins {
     alias(libs.plugins.hilt.android) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.google.gms.google.services) apply false
+    alias(libs.plugins.secret.gradle.plugin)
 }
 
 buildscript {
     dependencies {
         classpath(libs.google.services)
+        classpath("com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.1")
     }
 }

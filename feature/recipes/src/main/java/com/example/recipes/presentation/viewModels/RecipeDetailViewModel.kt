@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.recipe_data.useCases.RecipeDetailUseCase
 import com.example.recipe_domain.models.Recipe
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,6 +17,7 @@ import kotlinx.coroutines.launch
 class RecipeDetailViewModel @Inject constructor(
     private val useCase: RecipeDetailUseCase
 ) : ViewModel() {
+    private val user = Firebase.auth.currentUser
 
     private val _state = MutableStateFlow<Recipe?>(null)
     val state = _state.asStateFlow()
@@ -24,6 +27,9 @@ class RecipeDetailViewModel @Inject constructor(
 
     private val _error = MutableStateFlow("")
     val error = _error.asStateFlow()
+
+    private val _isOwner = MutableStateFlow(false)
+    val isOwner = _isOwner.asStateFlow()
 
     private var _currentRecipeId: String? = null
 
@@ -44,9 +50,10 @@ class RecipeDetailViewModel @Inject constructor(
 
     private fun getRecipeById(id: String) = viewModelScope.launch {
         _isLoading.value = true
-        
+
         try {
             _state.value = useCase.getRecipeById(id)
+            _isOwner.value = user?.uid == _state.value?.authorId
         } catch (e: Exception) {
             _error.value = e.localizedMessage ?: "Unknown error"
         } finally {

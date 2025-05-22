@@ -14,6 +14,7 @@ import com.example.configs.navigation.Routes
 import com.example.profile.presentation.screens.ProfileScreen
 import com.example.recipes.presentation.screens.RecipeCreationScreen
 import com.example.recipes.presentation.screens.RecipeDetailsScreen
+import com.example.recipes.presentation.screens.RecipeEditScreen
 import com.example.recipes.presentation.screens.RecipeFavoritesScreen
 import com.example.recipes.presentation.screens.RecipeListScreen
 
@@ -73,6 +74,15 @@ fun RecipeNavHost(navController: NavHostController) {
                         launchSingleTop = true
                         restoreState = true
                     }
+                },
+                onNavigateToEdit = {
+                    navController.navigate("${Routes.EDIT}/${it}") {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
                 })
         }
 
@@ -84,8 +94,27 @@ fun RecipeNavHost(navController: NavHostController) {
             RecipeCreationScreen()
         }
 
+        composable(
+            route = "${Routes.EDIT}/{recipeId}",
+            arguments = listOf(navArgument("recipeId") {
+                type = NavType.StringType
+            }),
+        ) {
+            RecipeEditScreen()
+        }
+
         composable(route = Routes.PROFILE) {
-            ProfileScreen()
+            ProfileScreen(
+                onNavigateToDetails = {
+                    navController.navigate("${Routes.DETAIL}/${it}") {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            )
         }
     }
 }

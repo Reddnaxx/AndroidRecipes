@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.google.gms.google.services)
     id("com.google.dagger.hilt.android")
     id("com.google.devtools.ksp")
 }
@@ -45,9 +44,11 @@ android {
 dependencies {
 
     implementation(project(":core:theme"))
+    implementation(project(":core:ui"))
     implementation(project(":core:configs"))
     implementation(project(":core:recipe-domain"))
     implementation(project(":core:recipe-data"))
+    implementation(project(":core:s3"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
@@ -61,6 +62,7 @@ dependencies {
     implementation(libs.androidx.runtime.android)
     implementation(libs.androidx.material3.android)
     implementation(libs.firebase.firestore)
+    implementation(libs.firebase.auth)
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.androidx.espresso.core)
