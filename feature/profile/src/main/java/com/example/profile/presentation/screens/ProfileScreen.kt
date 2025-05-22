@@ -25,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -55,88 +56,93 @@ fun ProfileScreen(
 
     val scrollState = rememberScrollState(0)
 
-    LazyColumn(
-        modifier = Modifier
-            .padding(horizontal = Spacing.small, vertical = Spacing.large),
-        verticalArrangement = Arrangement.spacedBy(Spacing.medium),
+    PullToRefreshBox(
+        isRefreshing = isLoading,
+        onRefresh = viewModel::refresh,
     ) {
-        item {
-            UserInfo(
-                user = user,
-                onSignOutClick = viewModel::signOut
-            )
-            Spacer(modifier = Modifier.height(Spacing.large))
-        }
-
-        item {
-            Text(
-                text = stringResource(R.string.profile_my_recipes),
-                style = MaterialTheme.typography.headlineSmall
-            )
-        }
-
-        when {
-            isLoading -> {
-                items(2) { idx ->
-                    val visibleState = remember {
-                        MutableTransitionState(false).apply {
-                            targetState = true
-                        }
-                    }
-
-                    AnimatedVisibility(
-                        visibleState = visibleState,
-                        enter = fadeIn(
-                            initialAlpha = 0.3f,
-                            animationSpec = tween(
-                                durationMillis = 600,
-                                delayMillis = idx * 100
-                            )
-                        ),
-                        exit = fadeOut(animationSpec = tween(durationMillis = 300))
-                    ) {
-                        MyRecipeCardSkeleton()
-                    }
-                }
+        LazyColumn(
+            modifier = Modifier
+                .padding(horizontal = Spacing.small, vertical = Spacing.large),
+            verticalArrangement = Arrangement.spacedBy(Spacing.medium),
+        ) {
+            item {
+                UserInfo(
+                    user = user,
+                    onSignOutClick = viewModel::signOut
+                )
+                Spacer(modifier = Modifier.height(Spacing.large))
             }
 
-            recipes.isNotEmpty() -> {
-                itemsIndexed(
-                    items = recipes,
-                    key = { _, recipe -> recipe.id }
-                ) { idx, recipe ->
-                    val visibleState = remember {
-                        MutableTransitionState(false).apply {
-                            targetState = true
+            item {
+                Text(
+                    text = stringResource(R.string.profile_my_recipes),
+                    style = MaterialTheme.typography.headlineSmall
+                )
+            }
+
+            when {
+                isLoading -> {
+                    items(2) { idx ->
+                        val visibleState = remember {
+                            MutableTransitionState(false).apply {
+                                targetState = true
+                            }
+                        }
+
+                        AnimatedVisibility(
+                            visibleState = visibleState,
+                            enter = fadeIn(
+                                initialAlpha = 0.3f,
+                                animationSpec = tween(
+                                    durationMillis = 600,
+                                    delayMillis = idx * 100
+                                )
+                            ),
+                            exit = fadeOut(animationSpec = tween(durationMillis = 300))
+                        ) {
+                            MyRecipeCardSkeleton()
                         }
                     }
+                }
 
-                    AnimatedVisibility(
-                        visibleState = visibleState,
-                        enter = fadeIn(
-                            initialAlpha = 0.3f,
-                            animationSpec = tween(
-                                durationMillis = 600,
-                                delayMillis = idx * 100
+                recipes.isNotEmpty() -> {
+                    itemsIndexed(
+                        items = recipes,
+                        key = { _, recipe -> recipe.id }
+                    ) { idx, recipe ->
+                        val visibleState = remember {
+                            MutableTransitionState(false).apply {
+                                targetState = true
+                            }
+                        }
+
+                        AnimatedVisibility(
+                            visibleState = visibleState,
+                            enter = fadeIn(
+                                initialAlpha = 0.3f,
+                                animationSpec = tween(
+                                    durationMillis = 600,
+                                    delayMillis = idx * 100
+                                )
+                            ),
+                            exit = fadeOut(animationSpec = tween(durationMillis = 300))
+                        ) {
+                            MyRecipeCard(
+                                recipe = recipe,
+                                onNavigateToDetails = onNavigateToDetails
                             )
-                        ),
-                        exit = fadeOut(animationSpec = tween(durationMillis = 300))
-                    ) {
-                        MyRecipeCard(
-                            recipe = recipe,
-                            onNavigateToDetails = onNavigateToDetails
+                        }
+                    }
+                }
+
+                else -> {
+                    item {
+                        Text(
+                            text = stringResource(R.string.profile_empty),
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.alpha(0.5f),
                         )
                     }
-                }
-            }
-
-            else -> {
-                item {
-                    Text(
-                        text = stringResource(R.string.profile_empty),
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.alpha(0.5f),
-                    )
                 }
             }
         }

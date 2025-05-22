@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -27,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil3.compose.AsyncImage
@@ -107,11 +109,12 @@ private fun RecipeDetailContent(
 
         AsyncImage(
             model = recipe.imageUrl,
-            contentDescription = null,
+            contentDescription = recipe.name,
+            contentScale = ContentScale.Crop,
             modifier = Modifier
-                .height(210.dp)
+                .fillMaxWidth()
+                .heightIn(min = 160.dp, max = 240.dp)
                 .clip(MaterialTheme.shapes.medium)
-                .align(Alignment.CenterHorizontally),
         )
 
         Spacer(modifier = Modifier.height(Spacing.medium))

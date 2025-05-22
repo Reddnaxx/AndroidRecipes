@@ -35,7 +35,7 @@ fun DynamicInputList(
     val focusRequester = remember { FocusRequester() }
 
     LaunchedEffect(value.size) {
-        if (value.isNotEmpty()) {
+        if (value.size > 1) {
             focusRequester.requestFocus()
         }
     }

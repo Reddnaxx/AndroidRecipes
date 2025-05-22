@@ -26,7 +26,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.auth.presentation.viewModels.AuthViewModel
@@ -79,9 +78,6 @@ class MainActivity : ComponentActivity() {
                                 actions = {
                                     ProfileButton(onClick = {
                                         navController.navigate(Routes.PROFILE) {
-                                            popUpTo(navController.graph.findStartDestination().id) {
-                                                saveState = true
-                                            }
                                             launchSingleTop = true
                                             restoreState = true
                                         }
@@ -100,9 +96,6 @@ class MainActivity : ComponentActivity() {
                             RecipeAddFloatingButton(
                                 onClick = {
                                     navController.navigate(Routes.CREATION) {
-                                        popUpTo(navController.graph.findStartDestination().id) {
-                                            saveState = true
-                                        }
                                         launchSingleTop = true
                                         restoreState = true
                                     }

@@ -21,10 +21,12 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -52,7 +54,8 @@ import com.example.ui.controls.input.presentation.componetns.DynamicInputList
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun RecipeCreationScreen(
-    viewModel: RecipeCreationViewModel = hiltViewModel()
+    viewModel: RecipeCreationViewModel = hiltViewModel(),
+    onComplete: () -> Unit,
 ) {
 
     val state = viewModel.state
@@ -113,7 +116,7 @@ fun RecipeCreationScreen(
 
         // Recipe steps input
         DynamicInputList(
-            value = state.steps,
+            value = state.instructions,
             label = "Шаги",
             inputLabel = "Шаг",
             onAdd = viewModel::addStep,
@@ -126,13 +129,25 @@ fun RecipeCreationScreen(
 
         // Create recipe button
         Button(
-            onClick = viewModel::createRecipe,
+            onClick = {
+                viewModel.createRecipe(
+                    onComplete = onComplete
+                )
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
             shape = MaterialTheme.shapes.medium,
-            enabled = state.isValid
+            enabled = state.isValid && !state.isSubmitting
         ) {
+            if (state.isSubmitting) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.width(Spacing.small))
+
             Text(
                 text = "Завершить создание",
                 style = MaterialTheme.typography.bodyLarge

@@ -3,6 +3,7 @@ package com.example.recipes.presentation.viewModels
 import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -10,7 +11,11 @@ import androidx.compose.runtime.setValue
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.recipe_domain.dto.RecipeDto
+import com.example.recipe_domain.repository.IRecipeRepository
 import com.example.s3.domain.repository.S3Repository
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -25,33 +30,69 @@ interface RecipeCreationState {
     val imageUri: String
     val description: String
     val ingredients: List<String>
-    val steps: MutableList<String>
+    val instructions: MutableList<String>
     val isValid: Boolean
+    val isSubmitting: Boolean
 }
 
 @HiltViewModel
 class RecipeCreationViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val s3Repository: S3Repository,
+    private val recipeRepository: IRecipeRepository
 ) : ViewModel() {
+
+    private val user = Firebase.auth.currentUser
 
     private val mutableState = MutableRecipeCreationState()
     val state: RecipeCreationState = mutableState
 
-    fun createRecipe() = viewModelScope.launch {
-        if (!mutableState.isValid) return@launch
+    fun createRecipe(onComplete: () -> Unit = {}) = viewModelScope.launch {
+        if (mutableState.isValid.not() || user == null) return@launch
 
         val pickedUri = mutableState.imageUri.toUri()
         val fileToUpload = uriToFile(pickedUri)
 
-        val remoteUrl = withContext(Dispatchers.IO) {
-            s3Repository.uploadFile(
-                filePath = fileToUpload.absolutePath,
-                objectKey = "images/${System.currentTimeMillis()}.jpg"
-            )
+        mutableState.isSubmitting = true
+
+        val imageUrl = withContext(Dispatchers.IO) {
+            try {
+                s3Repository.uploadFile(
+                    filePath = fileToUpload.absolutePath,
+                    objectKey = "images/${System.currentTimeMillis()}.jpg"
+                )
+            } catch (e: Exception) {
+                Log.e("RecipeCreationViewModel", "Error uploading file", e)
+                return@withContext null
+            }
         }
 
-        mutableState.imageUri = remoteUrl
+        if (imageUrl == null) {
+            Log.e("RecipeCreationViewModel", "Failed to upload image")
+            mutableState.isSubmitting = false
+            return@launch
+        }
+
+        try {
+            recipeRepository.addRecipe(
+                RecipeDto(
+                    authorId = user.uid,
+                    name = mutableState.name,
+                    imageUrl = imageUrl,
+                    description = mutableState.description,
+                    ingredients = mutableState.ingredients,
+                    instructions = mutableState.instructions
+                )
+            )
+        } catch (e: Exception) {
+            Log.e("RecipeCreationViewModel", "Error creating recipe", e)
+            return@launch
+        } finally {
+            mutableState.isSubmitting = false
+        }
+
+        onComplete()
+        clearState()
     }
 
     fun setName(name: String) {
@@ -77,19 +118,19 @@ class RecipeCreationViewModel @Inject constructor(
     }
 
     fun addStep() {
-        mutableState.steps += ""
+        mutableState.instructions += ""
     }
 
     fun updateStep(idx: Int, step: String) {
-        if (idx < 0 || idx >= mutableState.steps.size) {
+        if (idx < 0 || idx >= mutableState.instructions.size) {
             throw IndexOutOfBoundsException("Invalid index: $idx")
         }
 
-        mutableState.steps[idx] = step
+        mutableState.instructions[idx] = step
     }
 
     fun removeStep(idx: Int) {
-        mutableState.steps.removeAt(idx)
+        mutableState.instructions.removeAt(idx)
     }
 
     fun clearState() {
@@ -97,7 +138,7 @@ class RecipeCreationViewModel @Inject constructor(
         mutableState.imageUri = ""
         mutableState.description = ""
         mutableState.ingredients = emptyList()
-        mutableState.steps = mutableListOf()
+        mutableState.instructions = mutableListOf()
     }
 
     fun storeBitmapToCache(bitmap: Bitmap): Uri {
@@ -135,10 +176,12 @@ class RecipeCreationViewModel @Inject constructor(
         override var imageUri: String by mutableStateOf("")
         override var description: String by mutableStateOf("")
         override var ingredients: List<String> by mutableStateOf(emptyList())
-        override var steps: MutableList<String> = mutableStateListOf("")
+        override var instructions: MutableList<String> = mutableStateListOf("")
+
+        override var isSubmitting: Boolean by mutableStateOf(false)
 
         override val isValid: Boolean
             get() = name.isNotBlank() && imageUri.isNotBlank() && description.isNotBlank()
-                    && ingredients.isNotEmpty() && steps.any { it.isNotBlank() }
+                    && ingredients.isNotEmpty() && instructions.any { it.isNotBlank() }
     }
 }

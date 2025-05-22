@@ -4,7 +4,6 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -46,9 +45,6 @@ fun RecipeNavHost(navController: NavHostController) {
             RecipeListScreen(
                 onNavigateToDetails = {
                     navController.navigate("${Routes.DETAIL}/${it}") {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
                         launchSingleTop = true
                         restoreState = true
                     }
@@ -68,18 +64,12 @@ fun RecipeNavHost(navController: NavHostController) {
                     navController.navigate(
                         Routes.LIST
                     ) {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
                         launchSingleTop = true
                         restoreState = true
                     }
                 },
                 onNavigateToEdit = {
                     navController.navigate("${Routes.EDIT}/${it}") {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
                         launchSingleTop = true
                         restoreState = true
                     }
@@ -91,7 +81,14 @@ fun RecipeNavHost(navController: NavHostController) {
         }
 
         composable(route = Routes.CREATION) {
-            RecipeCreationScreen()
+            RecipeCreationScreen(
+                onComplete = {
+                    navController.navigate(Routes.PROFILE) {
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            )
         }
 
         composable(
@@ -107,9 +104,6 @@ fun RecipeNavHost(navController: NavHostController) {
             ProfileScreen(
                 onNavigateToDetails = {
                     navController.navigate("${Routes.DETAIL}/${it}") {
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
                         launchSingleTop = true
                         restoreState = true
                     }

@@ -28,9 +28,11 @@ class ProfileViewModel @Inject constructor(
     val isLoading = _isLoading.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            getUserRecipes()
-        }
+        refresh()
+    }
+
+    fun refresh() = viewModelScope.launch {
+        getUserRecipes()
     }
 
     private suspend fun getUserRecipes() {
