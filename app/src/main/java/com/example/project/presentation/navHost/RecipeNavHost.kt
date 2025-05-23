@@ -57,9 +57,9 @@ fun RecipeNavHost(navController: NavHostController) {
             arguments = listOf(navArgument("recipeId") {
                 type = NavType.StringType
             }),
-        ) { entry ->
+        ) {
             RecipeDetailsScreen(
-                recipeId = entry.arguments?.getString("recipeId"),
+                recipeId = it.arguments?.getString("recipeId"),
                 onNotFound = {
                     navController.navigate(
                         Routes.LIST
@@ -97,7 +97,22 @@ fun RecipeNavHost(navController: NavHostController) {
                 type = NavType.StringType
             }),
         ) {
-            RecipeEditScreen()
+            RecipeEditScreen(
+                recipeId = it.arguments?.getString("recipeId") ?: "",
+                onComplete = {
+                    navController.navigate(Routes.PROFILE) {
+                        launchSingleTop = true
+                    }
+                },
+                onNotFound = {
+                    navController.navigate(
+                        Routes.PROFILE
+                    ) {
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            )
         }
 
         composable(route = Routes.PROFILE) {

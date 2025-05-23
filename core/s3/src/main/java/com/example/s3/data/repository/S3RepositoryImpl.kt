@@ -40,7 +40,15 @@ class S3RepositoryImpl @Inject constructor(
 
     override suspend fun getFileUrl(
         objectKey: String
-    ): String {
-        return "$BASE_URL/$BUCKET_NAME/$objectKey"
+    ): String = "$BASE_URL/$BUCKET_NAME/$objectKey"
+
+    override suspend fun deleteFile(
+        objectKey: String
+    ): Boolean = try {
+        s3Client.deleteObject(BUCKET_NAME, objectKey)
+        true
+    } catch (e: Exception) {
+        throw RuntimeException("Failed to delete file: $objectKey", e)
     }
+
 }

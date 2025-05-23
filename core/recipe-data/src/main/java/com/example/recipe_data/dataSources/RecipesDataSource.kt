@@ -1,6 +1,8 @@
 package com.example.recipe_data.dataSources
 
+import android.util.Log
 import com.example.recipe_domain.dto.RecipeDto
+import com.example.recipe_domain.dto.RecipeUpdateDto
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
@@ -29,7 +31,10 @@ class RecipesDataSource @Inject constructor() {
                 }
             }
             .addOnFailureListener { exception ->
-                println("Error getting documents: $exception")
+                Log.d(
+                    "RecipesDataSource",
+                    "Error getting documents: $exception"
+                )
             }
             .await()
         return recipesList
@@ -47,22 +52,72 @@ class RecipesDataSource @Inject constructor() {
                 }
             }
             .addOnFailureListener { exception ->
-                println("Error getting documents: $exception")
+                Log.d(
+                    "RecipesDataSource",
+                    "Error getting documents: $exception"
+                )
             }
             .await()
 
         return result
     }
 
-    suspend fun addRecipe(recipe: RecipeDto) {
+    suspend fun createRecipe(recipe: RecipeDto) {
         db.collection("recipes")
             .add(recipe)
             .addOnSuccessListener { documentReference ->
                 documentReference.update("id", documentReference.id)
-                println("DocumentSnapshot added with ID: ${documentReference.id}")
+                Log.d(
+                    "RecipesDataSource",
+                    "Document added with ID: ${documentReference.id}"
+                )
             }
             .addOnFailureListener { e ->
-                println("Error adding document: $e")
+                Log.d("RecipesDataSource", "Error adding document: $e")
+            }
+            .await()
+    }
+
+    suspend fun updateRecipe(recipeId: String, recipe: RecipeUpdateDto) {
+        db.collection("recipes")
+            .document(recipeId)
+            .update(
+                "name", recipe.name,
+                "description", recipe.description,
+                "ingredients", recipe.ingredients,
+                "instructions", recipe.instructions,
+                "imageUrl", recipe.imageUrl,
+            )
+            .addOnSuccessListener {
+                Log.d(
+                    "RecipesDataSource",
+                    "Document $recipeId successfully updated!"
+                )
+            }
+            .addOnFailureListener { e ->
+                Log.d(
+                    "RecipesDataSource",
+                    "Error updating document ${recipeId}: $e"
+                )
+            }
+            .await()
+    }
+
+    suspend fun deleteRecipe(recipeId: String) {
+        db.collection("recipes")
+            .document(recipeId)
+            .delete()
+            .addOnSuccessListener {
+                Log.d(
+                    "RecipesDataSource",
+                    "Document $recipeId successfully deleted!"
+                )
+            }
+            .addOnFailureListener { e ->
+                Log.d(
+                    "RecipesDataSource",
+                    "Error deleting document ${recipeId}: $e"
+                )
             }
             .await()
     }

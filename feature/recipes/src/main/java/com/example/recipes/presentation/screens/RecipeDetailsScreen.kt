@@ -88,11 +88,13 @@ private fun RecipeDetailContent(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            // Title
             Text(
                 text = recipe.name,
                 style = MaterialTheme.typography.headlineMedium
             )
 
+            // Edit button
             if (isOwner) {
                 IconButton(
                     onClick = onEditClick
@@ -107,6 +109,7 @@ private fun RecipeDetailContent(
 
         Spacer(modifier = Modifier.height(Spacing.medium))
 
+        // Image
         AsyncImage(
             model = recipe.imageUrl,
             contentDescription = recipe.name,
@@ -119,6 +122,7 @@ private fun RecipeDetailContent(
 
         Spacer(modifier = Modifier.height(Spacing.medium))
 
+        // Description
         Text(
             text = recipe.description,
             style = MaterialTheme.typography.bodyLarge,
@@ -127,6 +131,7 @@ private fun RecipeDetailContent(
 
         Spacer(modifier = Modifier.height(Spacing.large))
 
+        // Ingredients title
         Text(
             text = "Ингредиенты",
             style = MaterialTheme.typography.titleLarge,
@@ -134,6 +139,7 @@ private fun RecipeDetailContent(
 
         Spacer(modifier = Modifier.height(Spacing.small))
 
+        // Ingredients list
         recipe.ingredients.forEach {
             Text(
                 text = it,
@@ -144,6 +150,7 @@ private fun RecipeDetailContent(
 
         Spacer(modifier = Modifier.height(Spacing.medium))
 
+        // Instructions title
         Text(
             text = "Приготовление",
             style = MaterialTheme.typography.titleLarge
@@ -151,9 +158,10 @@ private fun RecipeDetailContent(
 
         Spacer(modifier = Modifier.height(Spacing.small))
 
-        recipe.instructions.forEach {
+        // Instructions list
+        recipe.instructions.forEachIndexed { idx, it ->
             Text(
-                text = it,
+                text = "Шаг ${idx + 1} - $it",
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.fillMaxWidth(),
             )

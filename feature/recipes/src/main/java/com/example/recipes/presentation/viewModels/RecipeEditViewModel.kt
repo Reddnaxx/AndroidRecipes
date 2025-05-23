@@ -8,11 +8,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.toMutableStateList
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.recipe_data.useCases.RecipeCreationUseCase
-import com.example.recipe_domain.dto.RecipeDto
+import com.example.recipe_data.useCases.RecipeEditUseCase
+import com.example.recipe_domain.dto.RecipeUpdateDto
 import com.example.s3.domain.repository.S3Repository
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -25,60 +26,69 @@ import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
 
-interface RecipeCreationState {
+interface RecipeEditState {
+    val currentId: String
     val name: String
-    val imageUri: String
+    val image: String
     val description: String
     val ingredients: List<String>
     val instructions: MutableList<String>
     val isValid: Boolean
     val isSubmitting: Boolean
+    val isDeleting: Boolean
+    val isImageChanged: Boolean
+    val isLoading: Boolean
+    val isLoaded: Boolean
 }
 
 @HiltViewModel
-class RecipeCreationViewModel @Inject constructor(
+class RecipeEditViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val s3Repository: S3Repository,
-    private val useCase: RecipeCreationUseCase
+    private val useCase: RecipeEditUseCase
 ) : ViewModel() {
 
     private val user = Firebase.auth.currentUser
 
-    private val mutableState = MutableRecipeCreationState()
-    val state: RecipeCreationState = mutableState
+    private val mutableState = MutableRecipeEditState()
+    val state: RecipeEditState = mutableState
 
-    fun createRecipe(onComplete: () -> Unit = {}) = viewModelScope.launch {
+    fun updateRecipe(onComplete: () -> Unit = {}) = viewModelScope.launch {
         if (mutableState.isValid.not() || user == null) return@launch
-
-        val pickedUri = mutableState.imageUri.toUri()
-        val fileToUpload = uriToFile(pickedUri)
 
         mutableState.isSubmitting = true
 
-        val imageUrl = withContext(Dispatchers.IO) {
-            try {
-                s3Repository.uploadFile(
-                    filePath = fileToUpload.absolutePath,
-                    objectKey = "images/${System.currentTimeMillis()}.jpg"
-                )
-            } catch (e: Exception) {
-                Log.e("RecipeCreationViewModel", "Error uploading file", e)
-                return@withContext null
+        val image = if (mutableState.isImageChanged) {
+            val pickedUri = mutableState.image.toUri()
+            val fileToUpload = uriToFile(pickedUri)
+
+            withContext(Dispatchers.IO) {
+                try {
+                    s3Repository.uploadFile(
+                        filePath = fileToUpload.absolutePath,
+                        objectKey = "images/${System.currentTimeMillis()}.jpg"
+                    )
+                } catch (e: Exception) {
+                    Log.e("RecipeCreationViewModel", "Error uploading file", e)
+                    return@withContext null
+                }
             }
+        } else {
+            mutableState.image
         }
 
-        if (imageUrl == null) {
+        if (image == null) {
             Log.e("RecipeCreationViewModel", "Failed to upload image")
             mutableState.isSubmitting = false
             return@launch
         }
 
         try {
-            useCase.createRecipe(
-                RecipeDto(
-                    authorId = user.uid,
+            useCase.updateRecipe(
+                mutableState.currentId,
+                RecipeUpdateDto(
                     name = mutableState.name,
-                    imageUrl = imageUrl,
+                    imageUrl = image,
                     description = mutableState.description,
                     ingredients = mutableState.ingredients,
                     instructions = mutableState.instructions.filter { it.isNotBlank() }
@@ -95,12 +105,71 @@ class RecipeCreationViewModel @Inject constructor(
         clearState()
     }
 
+    fun deleteRecipe(onComplete: () -> Unit = {}) = viewModelScope.launch {
+        if (mutableState.currentId.isBlank()) return@launch
+
+        mutableState.isDeleting = true
+
+        try {
+            useCase.deleteRecipe(mutableState.currentId)
+        } catch (e: Exception) {
+            throw e
+        }
+
+        val imageKey = mutableState.image.substringAfterLast("images/")
+
+        withContext(Dispatchers.IO) {
+            try {
+                s3Repository.deleteFile(imageKey)
+            } catch (e: Exception) {
+                Log.e("RecipeEditViewModel", "Error deleting image", e)
+            }
+        }
+
+        mutableState.isDeleting = false
+
+        onComplete()
+        clearState()
+    }
+
+    fun initialize(id: String) {
+        mutableState.currentId = id
+
+        refresh()
+    }
+
+    private fun refresh() = viewModelScope.launch {
+        mutableState.isLoaded = false
+        mutableState.isLoading = true
+
+        val recipe = useCase.getRecipeById(mutableState.currentId)
+
+        if (recipe == null) {
+            Log.e(
+                "RecipeEditViewModel",
+                "Failed to load recipe with id: ${mutableState.currentId}"
+            )
+            return@launch
+        }
+
+        mutableState.name = recipe.name
+        mutableState.image = recipe.imageUrl
+        mutableState.description = recipe.description
+        mutableState.ingredients = recipe.ingredients
+        mutableState.instructions = recipe.instructions.toMutableStateList()
+        mutableState.isImageChanged = false
+
+        mutableState.isLoaded = true
+        mutableState.isLoading = false
+    }
+
     fun setName(name: String) {
         mutableState.name = name
     }
 
     fun setImageUri(imageURI: String) {
-        mutableState.imageUri = imageURI
+        mutableState.image = imageURI
+        mutableState.isImageChanged = true
     }
 
     fun setDescription(description: String) {
@@ -134,12 +203,16 @@ class RecipeCreationViewModel @Inject constructor(
     }
 
     fun clearState() {
+        mutableState.currentId = ""
         mutableState.name = ""
-        mutableState.imageUri = ""
+        mutableState.image = ""
         mutableState.description = ""
         mutableState.ingredients = emptyList()
         mutableState.instructions = mutableListOf()
         mutableState.isSubmitting = false
+        mutableState.isImageChanged = false
+        mutableState.isLoaded = false
+        mutableState.isLoading = false
     }
 
     fun storeBitmapToCache(bitmap: Bitmap): Uri {
@@ -172,17 +245,25 @@ class RecipeCreationViewModel @Inject constructor(
         return outFile
     }
 
-    class MutableRecipeCreationState : RecipeCreationState {
+    class MutableRecipeEditState : RecipeEditState {
+        override var currentId: String by mutableStateOf("")
+
         override var name: String by mutableStateOf("")
-        override var imageUri: String by mutableStateOf("")
+        override var image: String by mutableStateOf("")
         override var description: String by mutableStateOf("")
         override var ingredients: List<String> by mutableStateOf(emptyList())
         override var instructions: MutableList<String> = mutableStateListOf("")
 
         override var isSubmitting: Boolean by mutableStateOf(false)
+        override var isDeleting: Boolean by mutableStateOf(false)
+
+        override var isImageChanged: Boolean by mutableStateOf(false)
+
+        override var isLoading: Boolean by mutableStateOf(false)
+        override var isLoaded: Boolean by mutableStateOf(false)
 
         override val isValid: Boolean
-            get() = name.isNotBlank() && imageUri.isNotBlank() && description.isNotBlank()
+            get() = name.isNotBlank() && image.isNotBlank() && description.isNotBlank()
                     && ingredients.isNotEmpty() && instructions.any { it.isNotBlank() }
     }
 }

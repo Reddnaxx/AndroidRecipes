@@ -8,6 +8,6 @@ data class RecipeDto(
     @PropertyName("description") val description: String = "",
     @PropertyName("ingredients") val ingredients: List<String> = emptyList(),
     @PropertyName("instructions") val instructions: List<String> = emptyList(),
-    @PropertyName("imageUrl") val imageUrl: String? = null,
+    @PropertyName("imageUrl") val imageUrl: String = "",
     @PropertyName("authorId") val authorId: String = ""
 )

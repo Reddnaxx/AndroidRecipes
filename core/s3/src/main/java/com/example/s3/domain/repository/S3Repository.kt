@@ -9,4 +9,8 @@ interface S3Repository {
     suspend fun getFileUrl(
         objectKey: String
     ): String
+
+    suspend fun deleteFile(
+        objectKey: String
+    ): Boolean
 }

@@ -6,6 +6,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -52,10 +56,18 @@ class MainActivity : ComponentActivity() {
                 val authRepo = hiltViewModel<AuthViewModel>()
                 val authState by authRepo.state.collectAsState()
 
-                val currentTitle = when (currentRoute) {
-                    Routes.FAVORITES -> "Избранное"
-                    Routes.PROFILE -> "Профиль"
-                    Routes.CREATION -> "Создание рецепта"
+                val isFloatingButtonVisible = currentRoute in listOf(
+                    Routes.LIST,
+                    Routes.PROFILE,
+                    Routes.FAVORITES
+                )
+
+                val currentTitle = when {
+                    currentRoute == Routes.FAVORITES -> "Избранное"
+                    currentRoute == Routes.PROFILE -> "Профиль"
+                    currentRoute == Routes.CREATION -> "Создание рецепта"
+                    currentRoute?.contains(Routes.EDIT) == true -> "Редактирование рецепта"
+                    currentRoute?.contains(Routes.DETAIL) == true -> "Детали рецепта"
                     else -> "Рецепты"
                 }
 
@@ -92,7 +104,17 @@ class MainActivity : ComponentActivity() {
                         }
                     },
                     floatingActionButton = {
-                        if (currentRoute != Routes.CREATION) {
+                        AnimatedVisibility(
+                            visible = isFloatingButtonVisible,
+                            enter = fadeIn(
+                                initialAlpha = 0f,
+                                animationSpec = tween(durationMillis = 300)
+                            ),
+                            exit = fadeOut(
+                                targetAlpha = 0f,
+                                animationSpec = tween(durationMillis = 300)
+                            )
+                        ) {
                             RecipeAddFloatingButton(
                                 onClick = {
                                     navController.navigate(Routes.CREATION) {

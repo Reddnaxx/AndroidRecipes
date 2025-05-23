@@ -17,7 +17,7 @@ fun RecipeAddFloatingButton(
         onClick = onClick,
         containerColor = MaterialTheme.colorScheme.primary,
         contentColor = MaterialTheme.colorScheme.onPrimary,
-        shape = MaterialTheme.shapes.large,
+        shape = MaterialTheme.shapes.extraLarge,
         elevation = FloatingActionButtonDefaults.elevation(
             defaultElevation = 6.dp,
             pressedElevation = 8.dp

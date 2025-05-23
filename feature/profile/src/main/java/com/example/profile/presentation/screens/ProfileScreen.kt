@@ -58,13 +58,17 @@ fun ProfileScreen(
 
     PullToRefreshBox(
         isRefreshing = isLoading,
-        onRefresh = viewModel::refresh,
+        onRefresh = viewModel::refresh
     ) {
         LazyColumn(
-            modifier = Modifier
-                .padding(horizontal = Spacing.small, vertical = Spacing.large),
+            modifier = Modifier.padding(
+                horizontal = Spacing.small,
+                vertical = Spacing.large
+            ),
             verticalArrangement = Arrangement.spacedBy(Spacing.medium),
         ) {
+
+            // User info
             item {
                 UserInfo(
                     user = user,
@@ -73,6 +77,7 @@ fun ProfileScreen(
                 Spacer(modifier = Modifier.height(Spacing.large))
             }
 
+            // Recipes title
             item {
                 Text(
                     text = stringResource(R.string.profile_my_recipes),
@@ -80,7 +85,10 @@ fun ProfileScreen(
                 )
             }
 
+            // Recipes content
             when {
+
+                // Loading state
                 isLoading -> {
                     items(2) { idx ->
                         val visibleState = remember {
@@ -105,6 +113,7 @@ fun ProfileScreen(
                     }
                 }
 
+                // Recipes state
                 recipes.isNotEmpty() -> {
                     itemsIndexed(
                         items = recipes,
@@ -135,6 +144,7 @@ fun ProfileScreen(
                     }
                 }
 
+                // Empty state
                 else -> {
                     item {
                         Text(
@@ -169,10 +179,14 @@ private fun UserInfo(
         Column(
             modifier = Modifier.padding(start = 16.dp)
         ) {
+
+            // User name
             Text(
                 text = "${if (isNameEmpty) stringResource(R.string.profile_anonymous) else user.displayName}",
                 style = MaterialTheme.typography.bodyLarge
             )
+
+            // User email
             Text(
                 text = "${user.email}",
                 style = MaterialTheme.typography.bodyMedium,
