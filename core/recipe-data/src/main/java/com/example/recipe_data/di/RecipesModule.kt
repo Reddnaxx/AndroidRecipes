@@ -4,6 +4,7 @@ import com.example.recipe_data.dataSources.RecipesDataSource
 import com.example.recipe_data.repositories.RecipeRepositoryImpl
 import com.example.recipe_data.useCases.RecipeCreationUseCase
 import com.example.recipe_data.useCases.RecipeEditUseCase
+import com.example.recipe_data.useCases.RecipeFavoritesUseCase
 import com.example.recipe_data.useCases.RecipeListUseCase
 import com.example.recipe_data.useCases.RecipeProfileUseCase
 import com.example.recipe_domain.repository.RecipeRepository
@@ -43,4 +44,9 @@ object RecipesModule {
     fun provideRecipeEditUseCase(
         recipeRepository: RecipeRepository
     ): RecipeEditUseCase = RecipeEditUseCase(recipeRepository)
+
+    @Provides
+    fun provideRecipeFavoritesUseCase(
+        recipeRepository: RecipeRepository
+    ): RecipeFavoritesUseCase = RecipeFavoritesUseCase(recipeRepository)
 }

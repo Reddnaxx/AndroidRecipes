@@ -1,6 +1,7 @@
 package com.example.s3.data.repository
 
 import com.amazonaws.services.s3.AmazonS3Client
+import com.amazonaws.services.s3.model.DeleteObjectRequest
 import com.amazonaws.services.s3.model.PutObjectRequest
 import com.example.s3.domain.repository.S3Repository
 import java.io.File
@@ -45,7 +46,12 @@ class S3RepositoryImpl @Inject constructor(
     override suspend fun deleteFile(
         objectKey: String
     ): Boolean = try {
-        s3Client.deleteObject(BUCKET_NAME, objectKey)
+        val deleteRequest = DeleteObjectRequest(
+            BUCKET_NAME,
+            objectKey
+        )
+
+        s3Client.deleteObject(deleteRequest)
         true
     } catch (e: Exception) {
         throw RuntimeException("Failed to delete file: $objectKey", e)

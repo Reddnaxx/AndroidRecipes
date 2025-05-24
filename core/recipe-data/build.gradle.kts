@@ -41,6 +41,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.firebase.firestore.ktx)
+    implementation(libs.firebase.auth)
     implementation(libs.hilt.android)
 
     ksp(libs.hilt.android.compiler)

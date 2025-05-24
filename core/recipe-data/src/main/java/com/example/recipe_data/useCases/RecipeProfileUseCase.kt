@@ -1,6 +1,5 @@
 package com.example.recipe_data.useCases
 
-import com.example.recipe_data.mappers.toDomain
 import com.example.recipe_data.mappers.toDto
 import com.example.recipe_domain.models.Recipe
 import com.example.recipe_domain.repository.RecipeRepository
@@ -13,7 +12,7 @@ class RecipeProfileUseCase @Inject constructor(
 ) {
 
     suspend fun getUserRecipes(authorId: String): List<Recipe> =
-        recipeRepository.getRecipes(authorId).map { it.toDomain() }
+        recipeRepository.getRecipes(authorId)
 
     suspend fun addRecipe(recipe: Recipe) =
         recipeRepository.createRecipe(recipe.toDto())

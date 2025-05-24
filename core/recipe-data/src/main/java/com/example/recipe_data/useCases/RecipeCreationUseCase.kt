@@ -10,5 +10,5 @@ class RecipeCreationUseCase @Inject constructor(
     private val repo: RecipeRepository
 ) {
 
-    suspend fun createRecipe(recipe: RecipeDto) = repo.createRecipe(recipe)
+    suspend fun createRecipe(dto: RecipeDto) = repo.createRecipe(dto)
 }

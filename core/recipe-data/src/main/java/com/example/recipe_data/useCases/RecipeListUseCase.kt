@@ -1,6 +1,5 @@
 package com.example.recipe_data.useCases
 
-import com.example.recipe_data.mappers.toDomain
 import com.example.recipe_domain.models.Recipe
 import com.example.recipe_domain.repository.RecipeRepository
 import javax.inject.Inject
@@ -11,6 +10,5 @@ class RecipeListUseCase @Inject constructor(
     private val recipeRepository: RecipeRepository
 ) {
 
-    suspend fun getRecipes(): List<Recipe> =
-        recipeRepository.getRecipes().map { it.toDomain() }
+    suspend fun getRecipes(): List<Recipe> = recipeRepository.getRecipes()
 }

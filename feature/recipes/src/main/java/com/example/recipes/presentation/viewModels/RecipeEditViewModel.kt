@@ -62,6 +62,8 @@ class RecipeEditViewModel @Inject constructor(
             val pickedUri = mutableState.image.toUri()
             val fileToUpload = uriToFile(pickedUri)
 
+            deleteImage()
+
             withContext(Dispatchers.IO) {
                 try {
                     s3Repository.uploadFile(
@@ -116,15 +118,7 @@ class RecipeEditViewModel @Inject constructor(
             throw e
         }
 
-        val imageKey = mutableState.image.substringAfterLast("images/")
-
-        withContext(Dispatchers.IO) {
-            try {
-                s3Repository.deleteFile(imageKey)
-            } catch (e: Exception) {
-                Log.e("RecipeEditViewModel", "Error deleting image", e)
-            }
-        }
+        deleteImage()
 
         mutableState.isDeleting = false
 
@@ -136,6 +130,20 @@ class RecipeEditViewModel @Inject constructor(
         mutableState.currentId = id
 
         refresh()
+    }
+
+    private suspend fun deleteImage() {
+        if (mutableState.image.isBlank()) return
+
+        val imageKey = mutableState.image.substringAfterLast("images/")
+
+        withContext(Dispatchers.IO) {
+            try {
+                s3Repository.deleteFile("images/$imageKey")
+            } catch (e: Exception) {
+                Log.e("RecipeEditViewModel", "Error deleting image", e)
+            }
+        }
     }
 
     private fun refresh() = viewModelScope.launch {

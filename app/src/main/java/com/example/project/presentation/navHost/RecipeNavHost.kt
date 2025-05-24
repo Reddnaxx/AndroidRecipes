@@ -77,7 +77,14 @@ fun RecipeNavHost(navController: NavHostController) {
         }
 
         composable(route = Routes.FAVORITES) {
-            RecipeFavoritesScreen()
+            RecipeFavoritesScreen(
+                onNavigateToDetails = {
+                    navController.navigate("${Routes.DETAIL}/${it}") {
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
+            )
         }
 
         composable(route = Routes.CREATION) {
