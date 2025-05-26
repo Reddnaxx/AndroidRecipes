@@ -61,10 +61,11 @@ fun ProfileScreen(
         onRefresh = viewModel::refresh
     ) {
         LazyColumn(
-            modifier = Modifier.padding(
-                horizontal = Spacing.small,
-                vertical = Spacing.large
-            ),
+            modifier = Modifier
+                .padding(
+                    horizontal = Spacing.medium
+                )
+                .padding(bottom = Spacing.small, top = Spacing.large),
             verticalArrangement = Arrangement.spacedBy(Spacing.medium),
         ) {
 

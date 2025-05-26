@@ -2,4 +2,6 @@
 <resources>
     <string name="favorites_empty">Список избранных рецептов пуст</string>
     <string name="recipe_list_not_found">Рецепты не найдены</string>
+    <string name="recipe_list_search">Поиск</string>
+    <string name="recipe_list_clear_search">очистить</string>
 </resources>

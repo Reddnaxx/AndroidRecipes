@@ -3,8 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.gms.google.services)
-    id("com.google.dagger.hilt.android")
-    id("com.google.devtools.ksp")
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt.android)
     kotlin("plugin.serialization") version "2.0.21"
 }
 
@@ -54,6 +54,7 @@ dependencies {
     implementation(project(":feature:profile"))
     implementation(project(":feature:auth"))
 
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -66,8 +67,12 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.firebase.common.ktx)
+    implementation(libs.google.gson)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
 
     ksp(libs.hilt.android.compiler)
+    ksp(libs.androidx.room.compiler)
 
     testImplementation(libs.junit)
 

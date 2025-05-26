@@ -57,9 +57,7 @@ class MainActivity : ComponentActivity() {
                 val authState by authRepo.state.collectAsState()
 
                 val isFloatingButtonVisible = currentRoute in listOf(
-                    Routes.LIST,
-                    Routes.PROFILE,
-                    Routes.FAVORITES
+                    Routes.PROFILE
                 )
 
                 val currentTitle = when {

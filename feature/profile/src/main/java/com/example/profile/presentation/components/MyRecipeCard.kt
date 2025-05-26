@@ -140,7 +140,8 @@ private fun MyRecipeCardPreview() {
                 "Add sauce",
                 "Combine everything"
             ),
-            authorId = "123"
+            authorId = "123",
+            createdAt = ""
         ),
         onNavigateToDetails = {}
     )

@@ -2,8 +2,8 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("com.google.dagger.hilt.android")
-    id("com.google.devtools.ksp")
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt.android)
 }
 
 android {
@@ -47,6 +47,8 @@ dependencies {
     implementation(project(":core:auth-data"))
     implementation(project(":core:recipe-domain"))
     implementation(project(":core:recipe-data"))
+    implementation(project(":core:network"))
+    implementation(project(":core:local"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -68,7 +70,11 @@ dependencies {
     implementation(libs.googleid)
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.google.gson)
 
+    ksp(libs.androidx.room.compiler)
     ksp(libs.hilt.android.compiler)
 
     testImplementation(libs.junit)

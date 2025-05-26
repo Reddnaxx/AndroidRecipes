@@ -10,5 +10,6 @@ class RecipeListUseCase @Inject constructor(
     private val recipeRepository: RecipeRepository
 ) {
 
-    suspend fun getRecipes(): List<Recipe> = recipeRepository.getRecipes()
+    suspend fun getRecipes(query: String? = null): List<Recipe> =
+        recipeRepository.getRecipes(query = query)
 }

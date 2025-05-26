@@ -11,14 +11,18 @@ import javax.inject.Inject
 
 class RecipeRepositoryImpl @Inject constructor(
     private val recipesApi: RecipesDataSource,
-) : RecipeRepository {
+
+    ) : RecipeRepository {
 
     val uid
         get() = Firebase.auth.uid
             ?: throw IllegalStateException("User not authenticated")
 
-    override suspend fun getRecipes(authorId: String?): List<Recipe> =
-        recipesApi.getRecipes(uid, authorId)
+    override suspend fun getRecipes(
+        authorId: String?,
+        query: String?
+    ): List<Recipe> =
+        recipesApi.getRecipes(uid = uid, authorId = authorId, query = query)
 
     override suspend fun getRecipeById(id: String): Recipe? =
         recipesApi.getRecipeById(id)

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -23,9 +24,16 @@ import com.example.theme.Spacing
 fun RecipeList(
     recipes: List<Recipe>,
     isLoading: Boolean,
+    isNetworkAvailable: Boolean = true,
     onNavigateToDetails: (id: String) -> Unit,
     onFavoriteClick: (recipe: Recipe) -> Unit,
     emptyContent: @Composable () -> Unit = {},
+    networkUnavailableContent: @Composable () -> Unit = {
+        Text(
+            text = "Нет соединения с интернетом",
+            modifier = Modifier.fillMaxSize()
+        )
+    }
 ) {
     Crossfade(targetState = isLoading) { loading ->
         LazyColumn(
@@ -34,7 +42,11 @@ fun RecipeList(
                 .padding(Spacing.small),
             verticalArrangement = Arrangement.spacedBy(Spacing.small)
         ) {
-            if (loading) {
+            if (!isNetworkAvailable) {
+                item {
+                    networkUnavailableContent()
+                }
+            } else if (loading) {
                 items(count = 5) {
                     AnimatedVisibility(
                         visible = true,

@@ -15,6 +15,8 @@
             <option value="$PROJECT_DIR$/core/auth-data" />
             <option value="$PROJECT_DIR$/core/auth-domain" />
             <option value="$PROJECT_DIR$/core/configs" />
+            <option value="$PROJECT_DIR$/core/local" />
+            <option value="$PROJECT_DIR$/core/network" />
             <option value="$PROJECT_DIR$/core/recipe-data" />
             <option value="$PROJECT_DIR$/core/recipe-domain" />
             <option value="$PROJECT_DIR$/core/s3" />

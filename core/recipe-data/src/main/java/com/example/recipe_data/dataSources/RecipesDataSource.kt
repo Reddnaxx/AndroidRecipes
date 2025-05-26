@@ -5,11 +5,14 @@ import com.example.recipe_data.mappers.toDomain
 import com.example.recipe_domain.dto.RecipeDto
 import com.example.recipe_domain.dto.RecipeUpdateDto
 import com.example.recipe_domain.models.Recipe
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.time.Clock.System
+import kotlin.time.ExperimentalTime
 
 @Singleton
 class RecipesDataSource @Inject constructor() {
@@ -17,14 +20,16 @@ class RecipesDataSource @Inject constructor() {
 
     suspend fun getRecipes(
         uid: String,
-        authorId: String? = null
+        authorId: String? = null,
+        query: String? = null
     ): List<Recipe> {
         val recipesList = mutableListOf<RecipeDto>()
 
-        val collection = if (authorId != null) {
+        var collection = if (authorId != null) {
             db.collection("recipes").whereEqualTo("authorId", authorId)
         } else {
             db.collection("recipes")
+                .orderBy("createdAt", Query.Direction.DESCENDING)
         }
 
         val favoriteIds = getUserFavoriteIds(uid)
@@ -45,7 +50,7 @@ class RecipesDataSource @Inject constructor() {
             }
             .await()
 
-        return recipesList.map {
+        return recipesList.filter { it.name.contains(query ?: "", true) }.map {
             it.toDomain().copy(
                 isFavorite = favoriteIds.contains(it.id)
             )
@@ -74,11 +79,15 @@ class RecipesDataSource @Inject constructor() {
         return result
     }
 
+    @OptIn(ExperimentalTime::class)
     suspend fun createRecipe(recipe: RecipeDto) {
         db.collection("recipes")
             .add(recipe)
             .addOnSuccessListener { documentReference ->
-                documentReference.update("id", documentReference.id)
+                documentReference.update(
+                    "id", documentReference.id,
+                    "createdAt", System.now().toString()
+                )
                 Log.d(
                     "RecipesDataSource",
                     "Document added with ID: ${documentReference.id}"
@@ -143,7 +152,8 @@ class RecipesDataSource @Inject constructor() {
             return emptyList()
         }
 
-        db.collection("recipes").whereIn("id", userFavoriteIds)
+        db.collection("recipes")
+            .whereIn("id", userFavoriteIds)
             .get()
             .addOnSuccessListener { documents ->
                 for (document in documents) {

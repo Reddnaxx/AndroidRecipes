@@ -119,15 +119,14 @@ fun RecipeCardSkeleton(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             contentColor = MaterialTheme.colorScheme.onSurface
-        ),
-        onClick = {}
+        )
     ) {
         Column(modifier = Modifier.padding(Spacing.medium)) {
 
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(min = 160.dp, max = 200.dp)
+                    .height(200.dp)
                     .clip(MaterialTheme.shapes.medium)
                     .background(placeholderColor)
             )
@@ -182,7 +181,8 @@ private fun RecipeCardPreview() {
             ingredients = listOf("Ingredient 1", "Ingredient 2"),
             instructions = listOf("Step 1", "Step 2"),
             imageUrl = "https://example.com/image.jpg",
-            authorId = "id"
+            authorId = "id",
+            createdAt = ""
         ),
     )
 }
